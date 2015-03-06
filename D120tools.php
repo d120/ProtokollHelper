@@ -1,11 +1,11 @@
 <?php
 
 $wgHooks['ParserFirstCallInit'][] = 'wfProtokollHelperSetup';
- 
-function wfProkokollHelperSetup( Parser $parser ) {
+
+function wfProtokollHelperSetup( Parser $parser ) {
 	$parser->setHook( 'protokollliste', 'wfProtokollListeRender' );
 	$parser->setHook( 'bteil' , 'wfBTeilRender'  );
-       return true;
+	return true;
 }
 
 function isFachschaftler($user) {
@@ -61,7 +61,7 @@ function wfProtokollListeRender( $input, array $args, Parser $parser, PPFrame $f
 	foreach($res as $row) {
 		$title = preg_replace('$'.$args["regex"].'$', $args["replace"], $row->page_title);
 		$title = htmlspecialchars($title);
-		$out.= "<p><a href='/wiki/index.php/".$row->page_title."'>$title</a></p>\n";
+		$out.= "<p><a href='/wiki/".$row->page_title."'>$title</a></p>\n";
 	}
 
 	return $out;
@@ -144,6 +144,39 @@ function ProtectSource( $output, $article, $title, $user, $request ) {
 		// it take over
 		return true;
 	}
-	
 }
+
+
+function wfLetztesProtokollRender( $input, array $args, Parser $parser, PPFrame $frame ) {
+        $attr = array();    
+
+	$parser->disableCache();
+
+	$dbr = wfGetDB( DB_SLAVE );
+
+	$prefix = mysql_escape_string($args["prefix"]);
+
+	$conds = array();
+	$conds[] = "page_title like '$prefix%' ";
+	$res = $dbr->select(
+	  'page', array('page_namespace','page_title','page_is_redirect'),
+	  $conds, __METHOD__,
+	  array(
+	    'ORDER BY' => 'page_title DESC',
+	    'LIMIT' => '1',
+	    'OFFSET' => '0',
+	  )
+	);
+	$out = "";
+	$title = Title::loadFromRow($res[0]);
+
+	$page = new WikiPage();
+	$page->mTitle = $title;
+	$page->loadPageData();
+	//$page->
+
+	return $out;
+}
+
+
 
