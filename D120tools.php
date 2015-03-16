@@ -11,7 +11,8 @@ function wfProtokollHelperSetup( Parser $parser ) {
 function isFachschaftler($user) {
 	//var_dump($user);
 	if (!$user) return false;
-	return preg_match('/fachschaft.informatik.tu-darmstadt.de$/', $user->getEmail());
+	return $user->getOption('isFachschaftler') === "1";
+	//return preg_match('/fachschaft.informatik.tu-darmstadt.de$/', $user->getEmail());
 }
 
 function wfBTeilRender( $input, array $args, Parser $parser, PPFrame $frame ) {
