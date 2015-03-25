@@ -12,10 +12,8 @@ function wfProtokollHelperSetup( Parser $parser ) {
 }
 
 function isFachschaftler($user) {
-	//var_dump($user);
 	if (!$user) return false;
 	return $user->getOption('isFachschaftler') === "1";
-	//return preg_match('/fachschaft.informatik.tu-darmstadt.de$/', $user->getEmail());
 }
 
 function wfProtokollHelperRemoveTabsFromVector( SkinTemplate &$sktemplate, array &$links ) {
@@ -41,7 +39,6 @@ function wfBTeilRender( $input, array $args, Parser $parser, PPFrame $frame ) {
 		$GLOBALS['protokollHelperHasBTeil'] = true;
 		return array("<i style='color:#870'>Dies ist ein B-Teil und nur für aktive Fachschaftler sichtbar.</i>", "ishtml"=>true);
 	}
-//	return print_r($wgUser, true);
 }
 
 
@@ -100,10 +97,10 @@ function ProtectSource( $output, $article, $title, $user, $request ) {
 		wfProfileOut( __METHOD__ );
 		return;
 	}
-	//var_dump($request->getVal( 'action' ), $request->getVal( 'diff' ));
 
 	// only block source of protected pages
-	if(strpos($article->getPage()->getContent(), '/bteil') !== FALSE) {
+	if(strpos($article->getContent(), '/bteil') !== FALSE ||
+       	   ($article->getRevisionFetched()->getNext() !== NULL && strpos($article->getRevisionFetched()->getNext()->getText(), '/bteil') !== FALSE)) {
 		$protectSourceText = "Der Zugang zum Quelltext von Protokollen ist nur aktiven Fachschaftlern möglich.";
 	}
 	if (!$protectSourceText) {
