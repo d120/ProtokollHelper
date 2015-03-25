@@ -91,7 +91,7 @@ $wgHooks['MediaWikiPerformAction'][] = 'ProtectSource';
 
 function ProtectSource( $output, $article, $title, $user, $request ) {
 
-  global $wgActions, $wgUser;
+  	global $wgActions, $wgUser;
 
 	$protectSourceText = false;
 
@@ -103,7 +103,7 @@ function ProtectSource( $output, $article, $title, $user, $request ) {
 	//var_dump($request->getVal( 'action' ), $request->getVal( 'diff' ));
 
 	// only block source of protected pages
-	if(strpos($title->getFullText(),"Fachschaftssitzung/") === 0) {
+	if(strpos($article->getPage()->getContent(), '/bteil') !== FALSE) {
 		$protectSourceText = "Der Zugang zum Quelltext von Protokollen ist nur aktiven Fachschaftlern möglich.";
 	}
 	if (!$protectSourceText) {
