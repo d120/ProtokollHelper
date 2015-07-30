@@ -13,8 +13,17 @@ function wfProtokollHelperSetup( Parser $parser ) {
 
 function isFachschaftler($user) {
 	if (!$user) return false;
+#var_dump($user);
+
 	return $user->getOption('isFachschaftler') === "1";
 }
+
+function wfProtokollHelperOnArticlePageDataAfter( $article, $row ) {
+//	var_dump($row);
+	return true;
+}
+$wgHooks['ArticlePageDataAfter'][] = 'wfProtokollHelperOnArticlePageDataAfter';
+
 
 function wfProtokollHelperRemoveTabsFromVector( SkinTemplate &$sktemplate, array &$links ) {
 	global $protokollHelperHasBTeil;
@@ -31,13 +40,15 @@ function wfBTeilRender( $input, array $args, Parser $parser, PPFrame $frame ) {
 	$parser->disableCache();
 
 	if (isFachschaftler($wgUser)) {
-		return "<div style='color:#870;border:1px solid #fea;padding: 5px 10px;'>".
+		return "<div class='printonly'>(Hierzu gibt es einen B-Teil, der nur für aktive Fachschaftler sichtbar ist)</div><div style='color:#870;border:1px solid #fea;padding: 5px 10px;' class='b-teil noprint'>".
 		"<div style='float:right;background: #fea;margin:-5px -10px 0 0;padding:4px 10px;border-radius:0 0 0 8px;'>B-TEIL</div>".
-		"$input".
+		#$parser->parse($input, $parser->getTitle(), $parser->getOptions())->getText() .
+		$parser->recursiveTagParse( $input, $frame ).
+		#$input .
 		"</div>";
 	} else {
 		$GLOBALS['protokollHelperHasBTeil'] = true;
-		return array("<i style='color:#870'>Dies ist ein B-Teil und nur für aktive Fachschaftler sichtbar.</i>", "ishtml"=>true);
+		return array("<i style='color:#870'>[Hierzu gibt es einen B-Teil, der nur für aktive Fachschaftler sichtbar ist<span class='noprint'> | <a href='javascript:location=$(\"#pt-login a\")[0].href'>Einloggen</a> | <a href='/wiki/B-Teil'>weitere Informationen</a></span>]</i>", "ishtml"=>true);
 	}
 }
 
@@ -99,11 +110,14 @@ function ProtectSource( $output, $article, $title, $user, $request ) {
 	}
 
 	// only block source of protected pages
-	if(strpos($article->getContent(), '/bteil') !== FALSE ||
-       	   ($article->getRevisionFetched()->getNext() !== NULL && strpos($article->getRevisionFetched()->getNext()->getText(), '/bteil') !== FALSE)) {
+	if(strpos($article->getContent(), '/bteil') !== FALSE) {
+		$protectSourceText = "Der Zugang zum Quelltext von Seiten mit &lt;bteil&gt; ist nur aktiven Fachschaftlern möglich.";
+	}
+	$articleRev = $article->getRevisionFetched();
+       	if($articleRev !== NULL && $articleRev->getNext() !== NULL && strpos($articleRev->getNext()->getText(), '/bteil') !== FALSE) {
 		$protectSourceText = "Der Zugang zum Quelltext von Protokollen ist nur aktiven Fachschaftlern möglich.";
 	}
-	if (!$protectSourceText) {
+	if(!$protectSourceText) {
 		return true;
 	}
 
