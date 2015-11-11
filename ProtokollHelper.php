@@ -8,14 +8,16 @@ $wgHooks['SkinTemplateNavigation'][] = 'wfProtokollHelperRemoveTabsFromVector';
 function wfProtokollHelperSetup( Parser $parser ) {
 	$parser->setHook( 'protokollliste', 'wfProtokollListeRender' );
 	$parser->setHook( 'bteil' , 'wfBTeilRender'  );
+	$parser->setHook( 'semweb', 'wfSemwebRender' );
 	return true;
 }
 
+$wgAvailableRights[] = 'read-confidential';
 function isFachschaftler($user) {
 	if (!$user) return false;
 #var_dump($user);
 
-	return $user->getOption('isFachschaftler') === "1";
+	return $user->isAllowed('read-confidential');
 }
 
 function wfProtokollHelperOnArticlePageDataAfter( $article, $row ) {
@@ -33,6 +35,10 @@ function wfProtokollHelperRemoveTabsFromVector( SkinTemplate &$sktemplate, array
 		unset( $links['views']['history'] );
 	}
 	return true;
+}
+
+function wfSemwebRender( $input, array $args, Parser $parser, PPFrame $frame ) {
+        return array('   <script type="application/ld+json">' . $input . '</script>', 'noparse' => true, 'isHTML' => true );
 }
 
 function wfBTeilRender( $input, array $args, Parser $parser, PPFrame $frame ) {

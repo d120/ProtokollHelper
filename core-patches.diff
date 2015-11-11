@@ -1,0 +1,13 @@
+/var/lib/mediawiki/includes/search/SearchUpdate.php
+58,60d57
+>               // Protokoll Helper CORE HACK
+>               $text = preg_replace("#<bteil.*?</bteil>#s", "bteil", $text);
+> 
+/var/lib/mediawiki/includes/Revision.php
+903,907d902
+> 
+>               // Protokoll Helper CORE HACK
+>                 if (!isFachschaftler($GLOBALS["wgUser"]))
+>                   return preg_replace("#<bteil.*?</bteil>#s", "<"."bteil>geheim</bteil>", $text);
+>
+
