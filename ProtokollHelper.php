@@ -116,7 +116,7 @@ function ProtectSource( $output, $article, $title, $user, $request ) {
 	}
 
 	// only block source of protected pages
-	if(strpos($article->getContent(), '/bteil') !== FALSE) {
+	if(strpos($article->mContent, '/bteil') !== FALSE) {
 		$protectSourceText = "Der Zugang zum Quelltext von Seiten mit &lt;bteil&gt; ist nur aktiven Fachschaftlern möglich.";
 	}
 	$articleRev = $article->getRevisionFetched();
