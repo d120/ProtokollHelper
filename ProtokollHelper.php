@@ -66,7 +66,7 @@ function wfProtokollListeRender( $input, array $args, Parser $parser, PPFrame $f
 
 	$dbr = wfGetDB( DB_SLAVE );
 
-	$prefix = mysql_escape_string($args["prefix"]);
+	$prefix = mysqli_escape_string($args["prefix"]);
 
 	$conds = array();
 	$conds[] = "page_title like '$prefix%' ";
@@ -186,7 +186,7 @@ function wfLetztesProtokollRender( $input, array $args, Parser $parser, PPFrame 
 
 	$dbr = wfGetDB( DB_SLAVE );
 
-	$prefix = mysql_escape_string($args["prefix"]);
+	$prefix = mysqli_escape_string($args["prefix"]);
 
 	$conds = array();
 	$conds[] = "page_title like '$prefix%' ";
